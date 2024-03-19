@@ -1,0 +1,24 @@
+import matplotlib.pyplot as plt
+#import pandas as pd
+import numpy as np
+
+
+with open("data.txt", "r") as file:
+    # Read the entire contents of the file
+    contents = file.read()
+    dataLines = contents.split("\n")
+    
+    dataValues = []
+    
+    # Iterate over each line in the file
+    for row in dataLines:
+        # Split the line by commas and convert the values to integers
+        row_values = [int(value) for value in row.split(',')]
+        dataValues.append(row_values)
+
+    # Plot the boxplot for the data
+    plt.boxplot(dataValues)
+    plt.title('Boxplot Example')
+    plt.xlabel('x axis')  
+    plt.ylabel('y axis')
+    plt.show()
