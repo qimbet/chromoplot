@@ -39,25 +39,49 @@
 import os
 from cryptography.fernet import Fernet
 import datetime
+import sqlite3
 
 class cell: 
-    def __init__(inputKey, inputTimeIn, inputJailTime, inputOriginalDirectory, inputContents, inputIdentifier):
+    def __init__(inputKey, inputTimeIn, inputJailTime, inputOriginalDirectory, inputFileName, inputContents, inputIdentifier):
         self.key = inputKey
         self.timeIn = inputTimeIn
         self.jailTime = inputJailTime
         self.originalDirectory = inputOriginalDirectory
+        self.fileName = inputFileName
         self.contents = inputContents
         self.identifier = inputIdentifier   
 
     def __str__(self):
-        return(f"Recorded file contents are: {self.Contents}\nFile release date is: {calculateRelease(self.timeIn, self.jailTime)}")     
+        return(f"Recorded file contents are: {self.Contents}\nFile release date is: {calculateRelease(self.timeIn, self.jailTime)} (YYYY-MM-DD)\n")     
     
     def encryptFile(self):  #note that the "self" argument allows access to all class parameters
         currentDate = datetime.datetime.today() # returns date in format: YYYY-MM-DD
         calculateRelease(currentDate, jailTime)
 
+
         #record calculateRelease alongside information on: key, originalDirectory
         #file management/jailing is addressed here
+
+        encryptionMethod = Fernet(self.key)
+
+        with open(fileName, "rb") as file:
+            fileData = file.read()
+        encryptedData = encryptionMethod.encrypt(fileData)
+
+        with open(fileName + ".encrypted", "wb") as encrypted_file:
+            encrypted_file.write(encrypteData)
+            #write a copy of encrypted data to timeVault inventory
+
+        #delete original .exe file
+
+# Example usage
+
+write_key_to_file(key, "encryption_key.key")  # Save the key to a file (keep it secure)
+file_to_encrypt = "file_to_encrypt.txt"  # Replace with the path to your file
+encrypt_file(file_to_encrypt, key)
+
+
+
 
     def decryptFile(self):
         print(f"{self.contents} has finished its jail time! Now decrypting...\n")
@@ -75,27 +99,31 @@ def checkSentence(file, currentDate):
         return True
     else:
         return False
-    
-# ------------------------------------------------------------
-# Reference 
-# ------------------------------------------------------------
 
-def release (file):
-    #Decrypt file, move back to original directory
-    fernet = Fernet(key)
-    with open(filename, "rb") as encrypted_file:
-        encrypted_data = encrypted_file.read()
-    decrypted_data = fernet.decrypt(encrypted_data)
-    with open(filename.replace(".encrypted", ""), "wb") as decrypted_file:
-        decrypted_file.write(decrypted_data)
-        #housekeeping; file folder management
+def generateKey():
+    return Fernet.generate_key()
+
+def makeInventory():
+    inventory = "./Inventory" #could be iterated in a loop -- for files in [], if not os.[x] exists ...
+    if not os.inventory.exists(inventory):
+        os.mkdir(inventory)
+        print("Folder {inventory} created!")
+    else:
+        continue
+
+# ------------------------------------------------------------
+# Main 
+# ------------------------------------------------------------
 
 
 defaultFileDirectory = "/defaultFileDirectory"
-startupMessage = "Welcome to Timevault. \nCurrent timelock settings are for: n weeks\nCurrent file directory is: " + defaultFileDirectory + "\n\nPress 'enter' to begin.\n\nEnter 'edit' to change settings.\nEnter 'help' for more information."
+targetFile = "LeagueofLegends.exe"
+startupMessage = "Welcome to Timevault. \nCurrent timelock settings are for: n weeks\nCurrent file directory is: " + defaultFileDirectory + "\n" + f"You are looking to encrypt: {targetFile}" + "\n\nPress 'enter' to begin.\n\nEnter 'edit' to change settings.\nEnter 'help' for more information."
 promptIterationMessage = "Continue.\nPress 'enter' to begin program, using values as defined previously"
 helpString = "help"
 editString = "edit"
+
+global timeVaultInventory = "./Inventory"
 
 input(startupMessage) = userChoice
 while True:
@@ -108,37 +136,11 @@ while True:
     if(len.userChoice == 0)
         break
 
+key = generateKey()
+# ------------------------------------------------------------
+# Reference 
+# ------------------------------------------------------------
 
-
-#os.create filefolder newCell
-
-#CUT/copy entire contents of defaultFileDirectory
-#paste contents of defaultFileDirectory into newCell
-
-def generate_key():
-    return Fernet.generate_key()
-
-def write_key_to_file(key, filename):
-    with open(filename, "wb") as key_file:
-        key_file.write(key)
-
-def load_key_from_file(filename):
-    with open(filename, "rb") as key_file:
-        return key_file.read()
-
-def encrypt_file(filename, key):
-    fernet = Fernet(key)
-    with open(filename, "rb") as file:
-        file_data = file.read()
-    encrypted_data = fernet.encrypt(file_data)
-    with open(filename + ".encrypted", "wb") as encrypted_file:
-        encrypted_file.write(encrypted_data)
-
-# Example usage
-key = generate_key()
-write_key_to_file(key, "encryption_key.key")  # Save the key to a file (keep it secure)
-file_to_encrypt = "file_to_encrypt.txt"  # Replace with the path to your file
-encrypt_file(file_to_encrypt, key)
 
 # ------------------------------
 # DECRYPT
